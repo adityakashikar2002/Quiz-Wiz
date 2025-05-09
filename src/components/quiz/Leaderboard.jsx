@@ -2,7 +2,8 @@
 import { useState, useEffect } from 'react';
 import { useQuiz } from '../../context/QuizContext';
 import { FiAward } from 'react-icons/fi';
-import '../../styles/components/quiz.css';
+// import '../../styles/components/quiz.css';
+import '../../styles/pages/quizzes.css'
 
 const Leaderboard = ({ quizId }) => {
   const [leaderboard, setLeaderboard] = useState([]);

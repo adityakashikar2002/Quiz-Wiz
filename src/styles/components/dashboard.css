@@ -315,9 +315,9 @@
   }
   
   /* Quiz List */
-  .quiz-list-container {
+  /* .quiz-list-container {
     margin-top: 3rem;
-  }
+  } */
   
   .quiz-list-header {
     display: flex;
@@ -360,11 +360,11 @@
     background-color: var(--secondary-color);
   }
   
-  .quiz-grid {
+  /* .quiz-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
-  }
+  } */
   
   .empty-quiz-list {
     padding: 3rem;
@@ -497,9 +497,9 @@
       grid-template-columns: 1fr;
     }
     
-    .quiz-grid {
+    /* .quiz-grid {
       grid-template-columns: 1fr;
-    }
+    } */
     
     .quiz-list-header {
       flex-direction: column;
