@@ -1,169 +1,3 @@
-// import { createContext, useContext, useState, useEffect } from 'react';
-// import { useLocalStorage } from '../hooks/useLocalStorage';
-// import { 
-//   createQuiz as createQuizApi,
-//   getQuizzes,
-//   getQuizById,
-//   submitQuiz,
-//   getQuizResults
-// } from '../utils/quiz';
-// import { useAuth } from './AuthContext';
-
-// const QuizContext = createContext();
-
-// export const QuizProvider = ({ children }) => {
-//   const [quizzes, setQuizzes] = useLocalStorage('quizAppQuizzes', []);
-//   const [userQuizzes, setUserQuizzes] = useLocalStorage('quizAppUserQuizzes', []);
-//   const [quizResults, setQuizResults] = useLocalStorage('quizAppResults', []);
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState(null);
-//   const { user } = useAuth();
-
-//   useEffect(() => {
-//     if (user) {
-//       loadUserQuizzes();
-//       loadQuizResults();
-//     }
-//   }, [user]);
-
-//   const loadQuizzes = async () => {
-//     setLoading(true);
-//     try {
-//       const data = await getQuizzes();
-//       setQuizzes(data);
-//     } catch (err) {
-//       setError(err.message || 'Failed to load quizzes');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const loadUserQuizzes = async () => {
-//     if (!user) return;
-//     setLoading(true);
-//     try {
-//       const data = await getQuizzes(user.id);
-//       setUserQuizzes(data);
-//     } catch (err) {
-//       setError(err.message || 'Failed to load your quizzes');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const loadQuizResults = async () => {
-//     if (!user) return;
-//     setLoading(true);
-//     try {
-//       const data = await getQuizResults(user.id);
-//       setQuizResults(data);
-//     } catch (err) {
-//       setError(err.message || 'Failed to load quiz results');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const createQuiz = async (quizData) => {
-//     setLoading(true);
-//     try {
-//       const newQuiz = await createQuizApi(quizData, user.id);
-//       setUserQuizzes(prev => [...prev, newQuiz]);
-//       return newQuiz;
-//     } catch (err) {
-//       setError(err.message || 'Failed to create quiz');
-//       throw err;
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const getQuiz = async (quizId) => {
-//     setLoading(true);
-//     try {
-//       return await getQuizById(quizId);
-//     } catch (err) {
-//       setError(err.message || 'Failed to load quiz');
-//       throw err;
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   // const submitQuizAnswers = async (quizId, answers) => {
-//   //   setLoading(true);
-//   //   try {
-//   //     const result = await submitQuiz(quizId, user.id, answers);
-//   //     setQuizResults(prev => [...prev, result]);
-//   //     return result;
-//   //   } catch (err) {
-//   //     setError(err.message || 'Failed to submit quiz');
-//   //     throw err;
-//   //   } finally {
-//   //     setLoading(false);
-//   //   }
-//   // };
-//   const submitQuizAnswers = async (quizId, answers) => {
-//     const quiz = await getQuiz(quizId); // Fetch the quiz data
-//     console.log('Quiz Questions:', quiz.questions);
-//     let score = 0;
-//     const results = quiz.questions.map((question) => {
-//       const isCorrect = answers[question.id] === question.correctAnswer;
-//       const points = Number(question.points); // Convert to number here
-//       if (isCorrect) {
-//         score += points;
-//       }
-//       return {
-//         questionText: question.text,
-//         userAnswer: answers[question.id],
-//         correctAnswer: question.correctAnswer,
-//         isCorrect,
-//         points: isCorrect ? points : 0,
-//       };
-//     });
-  
-//     const maxScore = quiz.questions.reduce((total, question) => total + Number(question.points), 0);
-//     const percentage = (score / maxScore) * 100;
-//     console.log('Answers:', answers);
-//     console.log('Score:', score);
-//     console.log('Max Score:', maxScore);
-//     console.log('Percentage:', percentage);
-//     console.log('Results:', results);
-//     return {
-//       score,
-//       maxScore,
-//       percentage,
-//       passed: percentage >= quiz.passingScore,
-//       results,
-//       timeTaken: answers.timeTaken,
-//     };
-//   };
-  
-
-//   return (
-//     <QuizContext.Provider
-//       value={{
-//         quizzes,
-//         userQuizzes,
-//         quizResults,
-//         loading,
-//         error,
-//         loadQuizzes,
-//         loadUserQuizzes,
-//         loadQuizResults,
-//         createQuiz,
-//         getQuiz,
-//         submitQuizAnswers,
-//       }}
-//     >
-//       {children}
-//     </QuizContext.Provider>
-//   );
-// };
-
-// export const useQuiz = () => useContext(QuizContext);
-
-
 // src/context/QuizContext.js
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
@@ -310,6 +144,7 @@ export const QuizProvider = ({ children }) => {
       quizId,
       quizTitle: quiz.title,
       userId: user?.id || 'guest',
+      userName: user?.name || 'Guest', // Add user name
       score,
       maxScore,
       percentage,
@@ -319,21 +154,40 @@ export const QuizProvider = ({ children }) => {
       timeTaken: answers.timeTaken || 0,
     };
 
-    if (user) {
+    // Always save results for predefined quizzes
+    if (quiz.creatorId === 'system' || user) {
       const allResults = [...quizResults, result];
       setQuizResults(allResults);
-      await submitQuiz(quizId, user.id, answers);
+      await submitQuiz(quizId, user?.id || 'guest', answers);
     }
 
     return result;
   };
 
+  // const getLeaderboard = async (quizId) => {
+  //   try {
+  //     const results = await getQuizResults(null, quizId);
+  //     return results
+  //       .sort((a, b) => b.percentage - a.percentage)
+  //       .slice(0, 10);
+  //   } catch (err) {
+  //     setError(err.message || 'Failed to load leaderboard');
+  //     return [];
+  //   }
+  // };
+
+  // Update getLeaderboard function
   const getLeaderboard = async (quizId) => {
     try {
       const results = await getQuizResults(null, quizId);
       return results
         .sort((a, b) => b.percentage - a.percentage)
-        .slice(0, 10);
+        .slice(0, 10)
+        .map(result => ({
+          ...result,
+          displayName: result.userName || 
+                    (result.userId === 'guest' ? 'Guest' : `User ${result.userId.slice(0, 6)}`)
+        }));
     } catch (err) {
       setError(err.message || 'Failed to load leaderboard');
       return [];

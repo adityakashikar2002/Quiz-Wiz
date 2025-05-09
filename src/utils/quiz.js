@@ -1,139 +1,3 @@
-// import { saveToLocalStorage, getFromLocalStorage } from './storage';
-
-// const QUIZZES_KEY = 'quizAppAllQuizzes';
-// const RESULTS_KEY = 'quizAppAllResults';
-
-// // Initialize with some demo quizzes if none exist
-// const initializeQuizzes = () => {
-//   const quizzes = getFromLocalStorage(QUIZZES_KEY);
-//   if (!quizzes || quizzes.length === 0) {
-//     const demoQuizzes = [
-//       {
-//         id: '1',
-//         title: 'General Knowledge',
-//         description: 'Test your general knowledge with this quiz',
-//         creatorId: '1',
-//         questions: [
-//           {
-//             id: '1',
-//             text: 'What is the capital of France?',
-//             type: 'multiple-choice',
-//             options: ['London', 'Paris', 'Berlin', 'Madrid'],
-//             correctAnswer: 'Paris',
-//             points: 1,
-//           },
-//           {
-//             id: '2',
-//             text: 'Which planet is known as the Red Planet?',
-//             type: 'multiple-choice',
-//             options: ['Venus', 'Mars', 'Jupiter', 'Saturn'],
-//             correctAnswer: 'Mars',
-//             points: 1,
-//           }
-//         ],
-//         createdAt: new Date().toISOString(),
-//         timeLimit: 300, // 5 minutes in seconds
-//         passingScore: 50,
-//       }
-//     ];
-//     saveToLocalStorage(QUIZZES_KEY, demoQuizzes);
-//   }
-// };
-
-// initializeQuizzes();
-
-// export const createQuiz = async (quizData, creatorId) => {
-//   const quizzes = getFromLocalStorage(QUIZZES_KEY) || [];
-//   const newQuiz = {
-//     id: Date.now().toString(),
-//     ...quizData,
-//     creatorId,
-//     createdAt: new Date().toISOString(),
-//   };
-
-//   saveToLocalStorage(QUIZZES_KEY, [...quizzes, newQuiz]);
-//   return newQuiz;
-// };
-
-// export const getQuizzes = async (creatorId = null) => {
-//   const quizzes = getFromLocalStorage(QUIZZES_KEY) || [];
-//   if (creatorId) {
-//     return quizzes.filter(quiz => quiz.creatorId === creatorId);
-//   }
-//   return quizzes;
-// };
-
-// export const getQuizById = async (quizId) => {
-//   const quizzes = getFromLocalStorage(QUIZZES_KEY) || [];
-//   const quiz = quizzes.find(q => q.id === quizId);
-//   if (!quiz) {
-//     throw new Error('Quiz not found');
-//   }
-//   return quiz;
-// };
-
-// export const submitQuiz = async (quizId, userId, answers) => {
-//   const quizzes = getFromLocalStorage(QUIZZES_KEY) || [];
-//   const quiz = quizzes.find(q => q.id === quizId);
-//   if (!quiz) {
-//     throw new Error('Quiz not found');
-//   }
-
-//   let score = 0;
-//   const results = quiz.questions.map(question => {
-//     const userAnswer = answers[question.id];
-//     const isCorrect = userAnswer === question.correctAnswer;
-//     if (isCorrect) {
-//       score += question.points;
-//     }
-//     return {
-//       questionId: question.id,
-//       questionText: question.text,
-//       userAnswer,
-//       correctAnswer: question.correctAnswer,
-//       isCorrect,
-//       points: question.points,
-//     };
-//   });
-
-//   const percentage = Math.round((score / quiz.questions.reduce((sum, q) => sum + q.points, 0)) * 100);
-//   const passed = percentage >= quiz.passingScore;
-
-//   const result = {
-//     id: Date.now().toString(),
-//     quizId,
-//     quizTitle: quiz.title,
-//     userId,
-//     score,
-//     maxScore: quiz.questions.reduce((sum, q) => sum + q.points, 0),
-//     percentage,
-//     passed,
-//     results,
-//     submittedAt: new Date().toISOString(),
-//     timeTaken: answers.timeTaken || 0,
-//   };
-
-//   const allResults = getFromLocalStorage(RESULTS_KEY) || [];
-//   saveToLocalStorage(RESULTS_KEY, [...allResults, result]);
-//   return result;
-// };
-
-// export const getQuizResults = async (userId = null, quizId = null) => {
-//   const results = getFromLocalStorage(RESULTS_KEY) || [];
-//   if (userId && quizId) {
-//     return results.filter(r => r.userId === userId && r.quizId === quizId);
-//   }
-//   if (userId) {
-//     return results.filter(r => r.userId === userId);
-//   }
-//   if (quizId) {
-//     return results.filter(r => r.quizId === quizId);
-//   }
-//   return results;
-// };
-
-
-
 // src/utils/quiz.js
 import { saveToLocalStorage, getFromLocalStorage } from './storage';
 
@@ -887,6 +751,12 @@ export const submitQuiz = async (quizId, userId, answers) => {
   const allResults = getFromLocalStorage(RESULTS_KEY) || [];
   saveToLocalStorage(RESULTS_KEY, [...allResults, result]);
   return result;
+};
+
+// Add this new function to get results by quiz attempt ID
+export const getQuizResultById = async (resultId) => {
+  const results = getFromLocalStorage(RESULTS_KEY) || [];
+  return results.find(r => r.id === resultId);
 };
 
 export const getQuizResults = async (userId = null, quizId = null) => {

@@ -32,12 +32,25 @@ const Leaderboard = ({ quizId }) => {
       <h3 className="leaderboard-title">
         <FiAward className="icon" /> Top Performers
       </h3>
-      <ul className="leaderboard-list">
+      {/* <ul className="leaderboard-list">
         {leaderboard.map((result, index) => (
           <li key={result.id} className="leaderboard-item">
             <div className="leaderboard-rank">{index + 1}</div>
             <div className="leaderboard-user">
               {result.userId === 'guest' ? 'Guest' : `User ${result.userId.slice(0, 6)}`}
+            </div>
+            <div className="leaderboard-score">
+              {result.percentage}% ({result.score}/{result.maxScore})
+            </div>
+          </li>
+        ))}
+      </ul> */}
+      <ul className="leaderboard-list">
+        {leaderboard.map((result, index) => (
+          <li key={result.id} className="leaderboard-item">
+            <div className="leaderboard-rank">{index + 1}</div>
+            <div className="leaderboard-user">
+              {result.displayName}
             </div>
             <div className="leaderboard-score">
               {result.percentage}% ({result.score}/{result.maxScore})
