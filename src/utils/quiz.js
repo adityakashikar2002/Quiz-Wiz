@@ -707,7 +707,7 @@ export const getQuizById = async (quizId) => {
   return quiz;
 };
 
-export const submitQuiz = async (quizId, userId, answers) => {
+export const submitQuiz = async (quizId, userId, userName, answers) => {
   const quizzes = getFromLocalStorage(QUIZZES_KEY) || [];
   const quiz = quizzes.find(q => q.id === quizId);
   if (!quiz) {
@@ -739,6 +739,7 @@ export const submitQuiz = async (quizId, userId, answers) => {
     quizId,
     quizTitle: quiz.title,
     userId,
+    userName, // Store the userName here
     score,
     maxScore: quiz.questions.reduce((sum, q) => sum + q.points, 0),
     percentage,

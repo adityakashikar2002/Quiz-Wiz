@@ -155,26 +155,15 @@ export const QuizProvider = ({ children }) => {
     };
 
     // Always save results for predefined quizzes
+    // Always save results for predefined quizzes
     if (quiz.creatorId === 'system' || user) {
       const allResults = [...quizResults, result];
       setQuizResults(allResults);
-      await submitQuiz(quizId, user?.id || 'guest', answers);
+      await submitQuiz(quizId, user?.id || 'guest', user?.name || 'Guest', answers); // Pass userName here
     }
 
     return result;
   };
-
-  // const getLeaderboard = async (quizId) => {
-  //   try {
-  //     const results = await getQuizResults(null, quizId);
-  //     return results
-  //       .sort((a, b) => b.percentage - a.percentage)
-  //       .slice(0, 10);
-  //   } catch (err) {
-  //     setError(err.message || 'Failed to load leaderboard');
-  //     return [];
-  //   }
-  // };
 
   // Update getLeaderboard function
   const getLeaderboard = async (quizId) => {
