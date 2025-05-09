@@ -27,9 +27,9 @@ const QuizList = ({ quizzes, title, emptyMessage }) => {
             />
           </div>
         </div>
-        <Link to="/create-quiz" className="create-quiz-btn">
+        {/* <Link to="/create-quiz" className="create-quiz-btn">
           <FiPlus /> Create New
-        </Link>
+        </Link> */}
       </div>
       {filteredQuizzes.length > 0 ? (
         <div className="quiz-grid">
