@@ -31,10 +31,27 @@ const QuizCreator = () => {
     }));
   };
 
+  // const addQuestion = (question) => {
+  //   setQuizData(prev => ({
+  //     ...prev,
+  //     questions: [...prev.questions, question],
+  //   }));
+  // };
+
   const addQuestion = (question) => {
+    // Ensure each question has all required fields
+    const completeQuestion = {
+      id: question.id || Date.now().toString(), // Ensure ID exists
+      text: question.text,
+      type: question.type,
+      options: question.options || [], // For multiple-choice
+      correctAnswer: question.correctAnswer,
+      points: question.points || 1, // Default to 1 point if not specified
+    };
+    
     setQuizData(prev => ({
       ...prev,
-      questions: [...prev.questions, question],
+      questions: [...prev.questions, completeQuestion],
     }));
   };
 
@@ -53,14 +70,39 @@ const QuizCreator = () => {
     }));
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (quizData.questions.length === 0) {
+  //     alert('Please add at least one question');
+  //     return;
+  //   }
+  //   try {
+  //     const newQuiz = await createQuiz(quizData);
+  //     setCreatedQuizId(newQuiz.id);
+  //     setShowQRModal(true);
+  //   } catch (error) {
+  //     console.error('Error creating quiz:', error);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (quizData.questions.length === 0) {
-      alert('Please add at least one question');
-      return;
-    }
+    
+    // Validate questions
+    const validatedQuestions = quizData.questions.map(q => ({
+      id: q.id || Date.now().toString(),
+      text: q.text,
+      type: q.type,
+      options: q.options || [],
+      correctAnswer: q.correctAnswer,
+      points: Number(q.points) || 1, // Default points
+    }));
+    
     try {
-      const newQuiz = await createQuiz(quizData);
+      const newQuiz = await createQuiz({
+        ...quizData,
+        questions: validatedQuestions, // Use validated questions
+      });
       setCreatedQuizId(newQuiz.id);
       setShowQRModal(true);
     } catch (error) {

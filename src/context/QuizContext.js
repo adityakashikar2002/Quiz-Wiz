@@ -116,35 +116,93 @@ export const QuizProvider = ({ children }) => {
     }
   };
 
+  // const submitQuizAnswers = async (quizId, answers) => {
+  //   const quiz = await getQuiz(quizId);
+  //   let score = 0;
+  //   const results = quiz.questions.map(question => {
+  //     const userAnswer = answers[question.id];
+  //     const isCorrect = userAnswer === question.correctAnswer;
+  //     if (isCorrect) {
+  //       score += question.points;
+  //     }
+  //     return {
+  //       questionId: question.id,
+  //       questionText: question.text,
+  //       userAnswer,
+  //       correctAnswer: question.correctAnswer,
+  //       isCorrect,
+  //       points: question.points,
+  //     };
+  //   });
+
+  //   const maxScore = quiz.questions.reduce((sum, q) => sum + q.points, 0);
+  //   const percentage = Math.round((score / maxScore) * 100);
+  //   const passed = percentage >= quiz.passingScore;
+
+  //   const result = {
+  //     id: Date.now().toString(),
+  //     quizId,
+  //     quizTitle: quiz.title,
+  //     userId: user?.id || 'guest',
+  //     userName: user?.name || 'Guest', // Add user name
+  //     score,
+  //     maxScore,
+  //     percentage,
+  //     passed,
+  //     results,
+  //     submittedAt: new Date().toISOString(),
+  //     timeTaken: answers.timeTaken || 0,
+  //   };
+
+  //   // Always save results for predefined quizzes
+  //   // Always save results for predefined quizzes
+  //   if (quiz.creatorId === 'system' || user) {
+  //     const allResults = [...quizResults, result];
+  //     setQuizResults(allResults);
+  //     await submitQuiz(quizId, user?.id || 'guest', user?.name || 'Guest', answers); // Pass userName here
+  //   }
+
+  //   return result;
+  // };
+
+
   const submitQuizAnswers = async (quizId, answers) => {
     const quiz = await getQuiz(quizId);
     let score = 0;
+    
     const results = quiz.questions.map(question => {
       const userAnswer = answers[question.id];
-      const isCorrect = userAnswer === question.correctAnswer;
+      const correctAnswer = question.correctAnswer;
+      const points = Number(question.points) || 1; // Ensure points is a number
+      const isCorrect = String(userAnswer) === String(correctAnswer);
+      
       if (isCorrect) {
-        score += question.points;
+        score += points;
       }
+      
       return {
         questionId: question.id,
         questionText: question.text,
         userAnswer,
-        correctAnswer: question.correctAnswer,
+        correctAnswer,
         isCorrect,
-        points: question.points,
+        points,
       };
     });
 
-    const maxScore = quiz.questions.reduce((sum, q) => sum + q.points, 0);
+    const maxScore = quiz.questions.reduce(
+      (sum, q) => sum + (Number(q.points) || 1), 
+      0
+    );
     const percentage = Math.round((score / maxScore) * 100);
-    const passed = percentage >= quiz.passingScore;
+    const passed = percentage >= (quiz.passingScore || 50); // Default passing score
 
     const result = {
       id: Date.now().toString(),
       quizId,
       quizTitle: quiz.title,
       userId: user?.id || 'guest',
-      userName: user?.name || 'Guest', // Add user name
+      userName: user?.name || 'Guest',
       score,
       maxScore,
       percentage,
@@ -154,12 +212,10 @@ export const QuizProvider = ({ children }) => {
       timeTaken: answers.timeTaken || 0,
     };
 
-    // Always save results for predefined quizzes
-    // Always save results for predefined quizzes
     if (quiz.creatorId === 'system' || user) {
       const allResults = [...quizResults, result];
       setQuizResults(allResults);
-      await submitQuiz(quizId, user?.id || 'guest', user?.name || 'Guest', answers); // Pass userName here
+      await submitQuiz(quizId, user?.id || 'guest', user?.name || 'Guest', answers);
     }
 
     return result;

@@ -59,15 +59,34 @@ const QuizPlayer = () => {
     }
   };
 
+  // const handleSubmitQuiz = async () => {
+  //   try {
+  //     const quizResult = await submitQuizAnswers(quizId, {
+  //       ...answers,
+  //       timeTaken: quiz.timeLimit - timeLeft,
+  //     });
+  //     setResult(quizResult);
+  //     setQuizCompleted(true);
+  //   } catch (err) {
+  //     setError(err.message);
+  //   }
+  // };
+
   const handleSubmitQuiz = async () => {
     try {
+      console.log('Submitting answers:', answers);
+      console.log('Quiz questions:', quiz.questions);
+      
       const quizResult = await submitQuizAnswers(quizId, {
         ...answers,
         timeTaken: quiz.timeLimit - timeLeft,
       });
+      
+      console.log('Quiz result:', quizResult);
       setResult(quizResult);
       setQuizCompleted(true);
     } catch (err) {
+      console.error('Submission error:', err);
       setError(err.message);
     }
   };
